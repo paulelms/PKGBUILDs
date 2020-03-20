@@ -1,0 +1,43 @@
+pkgname=mu-msg2pdf
+pkgver=1.2
+pkgrel=3
+pkgdesc="Maildir indexer/searcher and Emacs client (mu4e)"
+arch=("x86_64")
+url="http://www.djcbsoftware.nl/code/mu"
+license=("GPL")
+depends=("gmime3" "xapian-core" "guile2.0" "webkitgtk")
+makedepends=("emacs")
+provides=('mu')
+conflicts=('mu' 'mu-git' 'mu-gut-msg2pdf')
+optdepends=("guile: guile support"
+            "emacs: mu4e support")
+source=("mu-$pkgver.tar.gz::https://github.com/djcb/mu/archive/$pkgver.tar.gz")
+md5sums=('5e7d7c3549b9428ec0b5ea7d374b6d0d')
+
+prepare() {
+  cd "mu-$pkgver"
+  autoreconf -i
+}
+
+
+build() {
+  cd "mu-$pkgver"
+  ./configure --prefix=/usr --disable-gtk
+  make
+}
+
+package() {
+  cd "mu-$pkgver"
+  make DESTDIR="$pkgdir" install
+
+  if [ -f toys/msg2pdf/msg2pdf ]; then
+    install -m755 toys/msg2pdf/msg2pdf "${pkgdir}"/usr/bin/msg2pdf
+  fi
+
+  # if [ -f toys/mug/mug ]; then
+  #   install -m755 toys/mug/mug "${pkgdir}"/usr/bin/mug
+  #   install -Dm644 toys/mug/mug.svg "${pkgdir}"/usr/share/pixmaps/mug.svg
+  # else
+  #   rm "${pkgdir}"/usr/share/man/man1/mug.1
+  # fi
+}

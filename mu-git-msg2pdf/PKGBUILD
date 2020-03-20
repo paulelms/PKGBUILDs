@@ -1,0 +1,45 @@
+pkgname=mu-git-msg2pdf
+pkgver=1.3.9.51.gc3bb0415
+pkgrel=1
+pkgdesc="mu and mu4e from git"
+arch=('i686' 'x86_64')
+url="http://www.djcbsoftware.nl/code/mu"
+depends=('xapian-core' 'guile' 'gmime3' 'webkitgtk')
+makedepends=('git')
+optdepends=('emacs: mu4e support')
+license=('GPL')
+provides=('mu')
+conflicts=('mu' 'mu-git')
+source=('git+https://github.com/djcb/mu.git')
+md5sums=('SKIP')
+
+pkgver() {
+  cd mu
+  printf "%s" "$(git describe --tags | tr - .)"
+}
+
+prepare() {
+  cd mu
+  ./autogen.sh --prefix=/usr
+}
+
+build() {
+  cd mu
+  make
+}
+
+package() {
+  cd mu
+  make DESTDIR="$pkgdir" install
+
+  if [ -f toys/msg2pdf/msg2pdf ]; then
+    install -m755 toys/msg2pdf/msg2pdf "${pkgdir}"/usr/bin/msg2pdf
+  fi
+
+  # if [ -f toys/mug/mug ]; then
+  #   install -m755 toys/mug/mug "${pkgdir}"/usr/bin/mug
+  #   install -Dm644 toys/mug/mug.svg "${pkgdir}"/usr/share/pixmaps/mug.svg
+  # else
+  #   rm "${pkgdir}"/usr/share/man/man1/mug.1
+  # fi
+}

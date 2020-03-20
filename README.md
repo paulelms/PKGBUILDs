@@ -1,2 +1,1 @@
-# pkgbuilds
-arch/manjaro packages
+- mu-msg2pdf, mu-git-msg2pdf — mu4e with msg2pdf
